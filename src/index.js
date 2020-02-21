@@ -12,6 +12,8 @@ import contentTypesReducer from './store/reducers/contentTypes';
 import attachmentTypesReducer from './store/reducers/attachmentTypes';
 import libraryReducer from './store/reducers/library';
 import contentReducer from './store/reducers/content';
+import contentAttachmentReducer from './store/reducers/contentAttachments';
+import bookReducer from './store/reducers/books';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -20,7 +22,9 @@ const rootReducer = combineReducers({
     contentTypes: contentTypesReducer,
     library: libraryReducer,
     attachmentTypes: attachmentTypesReducer,
-    content: contentReducer
+    content: contentReducer,
+    contentAttachments: contentAttachmentReducer,
+    books: bookReducer
 });
 
 const store = createStore(rootReducer, composeEnhancers(

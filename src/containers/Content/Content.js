@@ -6,10 +6,12 @@ import {connect} from 'react-redux';
 import ContentEdit from './Edit/ContentEdit';
 import classes from './Content.css';
 import axios from '../../axios-library';
+import moment from 'jalali-moment'
+import { Redirect } from 'react-router-dom';
 
 class Content extends Component {
     state = {
-        selectedFile: null
+        id:null
     };
 
     componentDidMount() {
@@ -59,7 +61,7 @@ class Content extends Component {
         const config = {
             headers: {Authorization: `Bearer ${this.props.token}`}
         };
-        axios.delete("/library/remove/" + row.toString(), config)
+        axios.delete("/content/remove/" + row.toString(), config)
             .then(response => {
             })
             .catch(err => {
@@ -67,27 +69,30 @@ class Content extends Component {
             });
     };
 
-    onChangeHandler=event=>{
-        this.setState({
-            selectedFile: event.target.files[0],
-            loaded: 0,
-        })
-    };
+    dateFormatter = (column, colIndex) => {
+        moment.locale('fa', { useGregorianParser: true });
 
-    fileUploader = (cell, row)  => {
-        return(
-            <div style={{dirction: "inline"}}>
-                <input type="file" name="file" onChange={this.onChangeHandler}/>
-                <button type="button" className="btn btn-success" onClick={() => this.onClickHandler(row)}>Upload
-                </button>
-            </div>
+        return (
+            <span>{moment(column.test).format('YYYY/MM/DD')}</span>
         );
     };
 
-    onClickHandler = (row) => {
-        const data = new FormData();
-        data.append('file', this.state.selectedFile)
-    }
+    viewFormatter = (cell, row) => {
+        return (
+                <button style={{marginLeft:"5px"}} onClick={() => this.openViewHandler(row.id)} className='btn btn-info'>مشاهده</button>
+        )
+    };
+
+    openViewHandler = (id) => {
+        this.setState({id:id});
+        return (<Redirect to={`/view-content/${id}`} />);
+    };
+
+    renderRedirect = () => {
+        if (this.state.id) {
+            return <Redirect to={`/view-content/${this.state.id}`} />
+        }
+    };
 
     render() {
 
@@ -118,10 +123,9 @@ class Content extends Component {
                                 search>
                     <TableHeaderColumn width="200px" dataAlign="right" dataField="id" isKey={true}>شناسه</TableHeaderColumn>
                     <TableHeaderColumn width="200px" dataAlign="right" dataField="name">نام</TableHeaderColumn>
-                    <TableHeaderColumn width="200px" dataAlign="right" dataField="buyDate">تاریخ خرید</TableHeaderColumn>
+                    <TableHeaderColumn width="200px" dataAlign="right" dataField="buyDate" dataFormat={this.dateFormatter}>تاریخ خرید</TableHeaderColumn>
                     <TableHeaderColumn width="200px" dataAlign="right" dataField="description">توضیحات</TableHeaderColumn>
-                    <TableHeaderColumn width="200px" dataAlign="right" dataField='action'
-                                       dataFormat={this.fileUploader}>آپلود فایل</TableHeaderColumn>
+                    <TableHeaderColumn width="200px" dataFormat={ this.viewFormatter } dataAlign="right" columnTitle>مشاهده</TableHeaderColumn>
                 </BootstrapTable>
             );
         }
@@ -129,6 +133,7 @@ class Content extends Component {
 
         return (
             <div dir="rtl" className={classes.Content}>
+                {this.renderRedirect()}
                 {table}
             </div>
         );

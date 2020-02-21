@@ -27,6 +27,18 @@ const asyncContent = asyncComponent(() => {
     return import('./containers/Content/Content');
 });
 
+const asyncViewContent = asyncComponent(() => {
+    return import('./containers/Content/View/ContentView');
+});
+
+const asyncHome = asyncComponent(() => {
+    return import('./containers/Libraries/Libraries');
+});
+
+const asyncViewLibrary = asyncComponent(() => {
+    return import('./containers/Libraries/View/LibraryView');
+});
+
 class App extends Component {
     componentDidMount () {
         this.props.onTryAutoSignup();
@@ -35,7 +47,9 @@ class App extends Component {
       let routes = (
           <Switch>
               <Route path="/auth" component={asyncAuth} />
-              <Redirect to="/" />
+              <Route path="/book-view/:id" component={asyncViewLibrary}/>
+              <Route path="/" component={asyncHome}/>
+              <Redirect to="/"/>
           </Switch>
       );
 
@@ -48,6 +62,9 @@ class App extends Component {
                   <Route path="/library" component={asyncLibrary} />
                   <Route path="/attachment-type" component={asyncAttachmentType} />
                   <Route path="/content" component={asyncContent} />
+                  <Route path="/view-content/:id" component={asyncViewContent}/>
+                  <Route path="/book-view/:id" component={asyncViewLibrary}/>
+                  <Route path="/" component={asyncHome}/>
                   <Redirect to="/" />
               </Switch>
           );

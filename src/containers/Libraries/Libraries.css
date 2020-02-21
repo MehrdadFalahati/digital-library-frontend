@@ -1,3 +1,136 @@
-Libraries {
+.Libraries {
     margin: 50px;
+    background-color: #FAFAFA;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+}
+
+ul {
+    list-style-type: none;
+}
+.Authors {
+    background-color: #FAFAFA;
+    width: inherit;
+    flex: 1;
+}
+.AuthorPhoto {
+    background-color: #FFFFFF;
+    height: 4vh;
+    width: 4vh;
+    border: 1px solid #CFD8DC;
+    border-radius: 50%;
+    margin-left: -5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.AuthorPhoto img {
+    height: 100%;
+    vertical-align: middle;
+}
+
+
+.Titel {
+    height: 6vh;
+    align-items: center;
+    color: #78909C;
+}
+.Titel span {
+    margin-left: 40px;
+    font-weight: bold;
+}
+.BookShelf {
+    height: inherit;
+    flex: 4;
+    margin-right: 15px;
+}
+.NavigationPanel {
+    height: 6vh;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 0.5px solid #CFD8DC;
+}
+.PopularBy {
+    background-color: #FAFAFA;
+    height: inherit;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    color: #78909C;
+}
+.PopularBy span {
+    margin-left: 40px;
+    font-weight: bold;
+}
+.NavBar {
+    height: inherit;
+    flex: 3;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.CategoryButton {
+    background-color: #FAFAFA;
+    color: #78909C;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 17px;
+    flex: 1;
+    height: 100%;
+}
+.CategoryButtonActive {
+    border-bottom: 2px solid #0091EA;
+    transition: 0.3s;
+}
+.Books {
+    background-color: #FAFAFA;
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.SearchBook {
+    background-color: #FAFAFA;
+    font-size: 16px;
+    height: inherit;
+    flex: 2;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.iconSearch{
+    margin: 5px;
+    color: #B0BEC5;
+}
+
+.SearchBook input {
+    background-color: inherit;
+    color: #90A4AE;
+    box-sizing: border-box;
+    border: 0;
+    border-bottom: 0.5px solid #B0BEC5;
+    flex: 2;
+    width: 50%;
+    font-size: 16px;
+    margin-right: 10px;
+    -webkit-transition: margin 0.4s ease-in-out;
+    transition: margin 0.4s ease-in-out;
+}
+.SearchBook input:focus {
+    margin-right: 3px;
+}
+.SearchBook input::-webkit-input-placeholder {
+    color: #B0BEC5;
+    -webkit-transition: color 0.4s ease-in-out;
+    transition: color 0.4s ease-in-out;
+}
+.SearchBook input:focus::-webkit-input-placeholder {
+    color: transparent;
 }

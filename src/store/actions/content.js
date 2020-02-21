@@ -38,3 +38,42 @@ export const fetchContents = (token) => {
             } );
     };
 };
+
+
+export const loadContentSuccess = ( content ) => {
+    return {
+        type: actionTypes.LOAD_CONTENT_SUCCESS,
+        content: content,
+    };
+};
+
+export const loadContentFail = ( error ) => {
+    return {
+        type: actionTypes.LOAD_CONTENT_FAIL,
+        error: error
+    };
+};
+
+export const loadContentStart = () => {
+    return {
+        type: actionTypes.LOAD_CONTENT_START
+    };
+};
+
+export const loadContent = (token, id) => {
+    return dispatch => {
+        dispatch(loadContentStart());
+        const config = {
+            headers: { Authorization: `Bearer ${token}` },
+        };
+
+        axios.get( '/content/load/' + id , config)
+            .then( res => {
+                console.log(res.data);
+                dispatch(loadContentSuccess(res.data));
+            } )
+            .catch( err => {
+                dispatch(loadContentFail(err));
+            } );
+    };
+};

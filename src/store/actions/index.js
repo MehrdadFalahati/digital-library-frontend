@@ -18,5 +18,16 @@ export {
 } from './attachmentTypes';
 
 export {
-    fetchContents
+    fetchContents,
+    loadContent
 } from './content';
+
+export {
+    fetchContentAttachments
+} from './contentAttachments';
+
+export {
+    fetchBooks,
+    fetchLibraryBooks,
+    loadBook
+} from './books';

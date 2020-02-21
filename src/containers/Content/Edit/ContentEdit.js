@@ -8,6 +8,9 @@ import {checkValidity, updateObject} from '../../../shared/utility';
 import axios from '../../../axios-library';
 
 import AsyncSelect from 'react-select/async';
+import moment from 'jalali-moment'
+import DatePicker from "react-datepicker2/dist";
+import {ProgressBar} from 'react-bootstrap';
 
 class ContentEdit extends Component {
     state = {
@@ -38,6 +41,19 @@ class ContentEdit extends Component {
                 valid: false,
                 touched: false
             },
+            rate: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'سطح محبوبیت'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            },
         },
         formIsValid: false,
         inputValue: '',
@@ -46,7 +62,11 @@ class ContentEdit extends Component {
         selectedOption: {
             contentType:null,
             library:null
-        }
+        },
+        selectedFile: null,
+        fileId: null,
+        buyDate:null,
+        dateValue: null
     };
 
     componentDidMount() {
@@ -59,15 +79,24 @@ class ContentEdit extends Component {
         const libraryRequest = {
             name: this.state.contentForm.name.value,
             description: this.state.contentForm.description.value,
+            rate: this.state.contentForm.rate.value,
+            buyDate: this.state.buyDate,
             contentType: {
-                id: this.state.selectedOption.value,
-                title: this.state.selectedOption.label
+                id: this.state.selectedOption.contentType !== null ? this.state.selectedOption.contentType.value:null,
+                title: this.state.selectedOption.contentType !== null ?this.state.selectedOption.contentType.label:null
+            },
+            library: {
+                id: this.state.selectedOption.library !== null ? this.state.selectedOption.library.value:null,
+                title: this.state.selectedOption.library !== null ?this.state.selectedOption.library.label:null
+            },
+            contentData : {
+                id: this.state.fileId
             }
         };
         const config = {
             headers: {Authorization: `Bearer ${this.props.token}`}
         };
-        axios.post("/library/save-update", libraryRequest, config)
+        axios.post("/content/save-update", libraryRequest, config)
             .then(response => {
                 // You should call onSave function and give the new row
                 onSave(response.data);
@@ -131,21 +160,27 @@ class ContentEdit extends Component {
 
     loadOptions = (inputValue, callback) => {
         setTimeout(() => {
-            callback(this.filterContentType(inputValue));
+            callback(this.selectContentType(inputValue));
         }, 1000);
     };
+
+    selectContentType = (inputValue) => {
+        return this.state.contentTypes.filter(i =>
+            i.label.includes(inputValue)
+        );
+    }
 
     loadLibraryOptions = (inputValue, callback) => {
         setTimeout(() => {
-            callback(this.filterLibrary(inputValue));
+            callback(this.selectLibrary(inputValue));
         }, 1000);
     };
 
-    handleSelectChange = (newValue) => {
-        const inputValue = newValue.replace(/\W/g, '');
-        this.setState({ inputValue:inputValue });
-        return inputValue;
-    };
+    selectLibrary = (inputValue) => {
+        return this.state.libraries.filter(i =>
+            i.label.includes(inputValue)
+        );
+    }
 
     inputSelectedHandler = (selectedValue, name) => {
         const updatedSelectOption = {
@@ -156,6 +191,37 @@ class ContentEdit extends Component {
         this.setState({selectedOption: updatedSelectOption},
             () => console.log(`Option selected:`, this.state.selectedOption));
     };
+
+    onChangeHandler=event=>{
+        this.setState({
+            selectedFile: event.target.files[0],
+            loaded: 0,
+        })
+    };
+
+    onClickHandler = () => {
+        const data = new FormData();
+        data.append('file', this.state.selectedFile);
+        const config = {
+            headers: {Authorization: `Bearer ${this.props.token}`},
+            onUploadProgress: ProgressEvent => {
+                this.setState({
+                    loaded: (ProgressEvent.loaded / ProgressEvent.total*100),
+                })}
+        };
+        axios.post("/files/upload-file", data, config)
+            .then(res => { // then print response status
+                console.log(res)
+                this.setState({fileId:res.id});
+            }).catch(err => {
+                console.log(err)
+            })
+    };
+
+    changeDateHandler = (event) => {
+        const updatedBuyDate = moment(event.value.format('jYYYY/jMM/jDD HH:mm:ss'), 'YYYY-M-D HH:mm:ss').toDate();
+        this.setState({buyDate:updatedBuyDate, dateValue: event.value})
+    }
 
 
     render() {
@@ -190,16 +256,30 @@ class ContentEdit extends Component {
         );
 
         return (
-            <div dir="rtl" style={{backgroundColor: '#eeeeee', marginTop: "100px"}} className={classes.ContentEdit}>
+            <div dir="rtl" style={{backgroundColor: '#eeeeee', marginTop: "55px"}} className={classes.ContentEdit}>
                 <h4>فرم ایجاد محتوا</h4>
                 {form}
+                <div style={{margin: "20px 10px"}}>
+                    <input type="file" name="file" onChange={this.onChangeHandler}/>
+                    <ProgressBar animated={true} max="100" variant="success" value={this.state.loaded} >{Math.round(this.state.loaded,2) }%</ProgressBar>
+                    <button type="button" className="btn btn-success btn-block" onClick={this.onClickHandler}>آپلود فایل
+                    </button>
+                </div>
+                <div style={{margin: "20px 10px"}}>
+                    <DatePicker
+                        onChange={(value)=>this.changeDateHandler({ value })}
+                        value={this.state.dateValue}
+                        isGregorian={false}
+                        placeholder="تاریخ خرید"
+                    />
+                </div>
                 <div style={{margin: "20px 10px"}}>
                     <AsyncSelect
                         cacheOptions
                         loadOptions={this.loadOptions}
                         defaultOptions={this.state.contentTypes}
-                        onInputChange={this.handleSelectChange}
                         onChange={(event)=>this.inputSelectedHandler(event,'contentType')}
+                        placeholder="انتخاب نوع محتوا"
                     />
                 </div>
                 <div style={{margin: "0 10px 20px 10px"}}>
@@ -207,8 +287,8 @@ class ContentEdit extends Component {
                         cacheOptions
                         loadOptions={this.loadLibraryOptions}
                         defaultOptions={this.state.libraries}
-                        onInputChange={this.handleSelectChange}
                         onChange={(event)=>this.inputSelectedHandler(event,'library')}
+                        placeholder="انتخاب کتابخانه"
                     />
                 </div>
                 <div>

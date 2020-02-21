@@ -8,9 +8,6 @@ import classes from './Library.css';
 import axios from '../../axios-library';
 
 class Library extends Component {
-    state = {
-        data: []
-    };
     componentDidMount() {
         this.props.onFetchLibrary(this.props.token);
     }

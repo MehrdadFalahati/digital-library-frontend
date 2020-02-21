@@ -171,6 +171,7 @@ class LibraryEdit extends Component {
                         defaultOptions={this.state.contentTypes}
                         onInputChange={this.handleSelectChange}
                         onChange={this.inputSelectedHandler}
+                        placeholder="انتخاب نوع محتوا"
                     />
                 </div>
                 <div>
